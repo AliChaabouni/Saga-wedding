@@ -9,6 +9,9 @@ import { setupPointagesHandlers } from './ipc/pointages'
 import { setupAvancesHandlers } from './ipc/avances'
 import { setupCalendarHandlers } from './ipc/calendar'
 import { setupDashboardHandlers } from './ipc/dashboard'
+import { setupClientsHandlers } from './ipc/clients'
+import { setupDevisHandlers } from './ipc/devis'
+import { setupFacturesHandlers } from './ipc/factures'
 
 function createWindow() {
   const mainWindow = new BrowserWindow({
@@ -33,6 +36,9 @@ app.whenReady().then(() => {
   setupAvancesHandlers()
   setupCalendarHandlers()
   setupDashboardHandlers()
+  setupClientsHandlers()
+  setupDevisHandlers()
+  setupFacturesHandlers()
 
   createWindow()
   app.on('activate', function () { if (BrowserWindow.getAllWindows().length === 0) createWindow() })

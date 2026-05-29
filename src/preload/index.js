@@ -7,6 +7,9 @@ import pointagesApi from './api/pointages'
 import avancesApi from './api/avances'
 import calendarApi from './api/calendar'
 import dashboardApi from './api/dashboard'
+import clientsApi from './api/clients'
+import devisApi from './api/devis'
+import facturesApi from './api/factures'
 
 const api = {
   ...authApi,
@@ -14,7 +17,10 @@ const api = {
   ...pointagesApi,
   ...avancesApi,
   ...calendarApi,
-  ...dashboardApi
+  ...dashboardApi,
+  ...clientsApi,
+  ...devisApi,
+  ...facturesApi
 }
 
 if (process.contextIsolated) {

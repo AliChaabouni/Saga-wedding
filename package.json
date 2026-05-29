@@ -27,9 +27,12 @@
     "file-saver": "^2.0.5",
     "jspdf": "^4.2.1",
     "jspdf-autotable": "^5.0.7",
+    "libphonenumber-js": "^1.13.4",
     "lucide-react": "^1.14.0",
+    "react-phone-number-input": "^3.4.17",
     "react-router-dom": "^7.14.2",
-    "sqlite3": "^6.0.1"
+    "sqlite3": "^6.0.1",
+    "written-number": "^0.11.1"
   },
   "devDependencies": {
     "@electron-toolkit/eslint-config": "^2.1.0",

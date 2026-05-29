@@ -43,6 +43,82 @@ export function initDatabase() {
       date_fin TEXT
     )`)
 
+    db.run(`CREATE TABLE IF NOT EXISTS clients (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      type_client TEXT DEFAULT 'physique',
+      nom TEXT,
+      prenom TEXT,
+      raison_sociale TEXT,
+      email TEXT,
+      telephone TEXT,
+      adresse TEXT,
+      matricule_fiscale TEXT
+    )`)
+
+    db.run(`CREATE TABLE IF NOT EXISTS devis (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      numero TEXT UNIQUE,
+      client_id INTEGER,
+      date_creation TEXT,
+      date_validite TEXT,
+      statut TEXT DEFAULT 'Brouillon',
+      total_ht REAL DEFAULT 0,
+      tva REAL DEFAULT 0,
+      total_ttc REAL DEFAULT 0,
+      notes TEXT,
+      FOREIGN KEY(client_id) REFERENCES clients(id) ON DELETE CASCADE
+    )`)
+
+    db.run(`CREATE TABLE IF NOT EXISTS devis_items (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      devis_id INTEGER,
+      description TEXT,
+      quantite INTEGER DEFAULT 1,
+      prix_unitaire REAL DEFAULT 0,
+      total REAL DEFAULT 0,
+      FOREIGN KEY(devis_id) REFERENCES devis(id) ON DELETE CASCADE
+    )`)
+
+    db.run(`CREATE TABLE IF NOT EXISTS factures (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      numero TEXT UNIQUE,
+      client_id INTEGER,
+      devis_id INTEGER,
+      date_creation TEXT,
+      date_echeance TEXT,
+      statut TEXT DEFAULT 'Brouillon',
+      total_ht REAL DEFAULT 0,
+      tva REAL DEFAULT 0,
+      total_ttc REAL DEFAULT 0,
+      notes TEXT,
+      FOREIGN KEY(client_id) REFERENCES clients(id) ON DELETE CASCADE,
+      FOREIGN KEY(devis_id) REFERENCES devis(id) ON DELETE SET NULL
+    )`)
+
+    db.run(`CREATE TABLE IF NOT EXISTS facture_items (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      facture_id INTEGER,
+      description TEXT,
+      quantite INTEGER DEFAULT 1,
+      prix_unitaire REAL DEFAULT 0,
+      total REAL DEFAULT 0,
+      FOREIGN KEY(facture_id) REFERENCES factures(id) ON DELETE CASCADE
+    )`)
+
+    // Migrations to add columns if they don't exist
+    const addCol = (table, colDef) => db.run(`ALTER TABLE ${table} ADD COLUMN ${colDef}`, () => {});
+    addCol('clients', `type_client TEXT DEFAULT 'physique'`);
+    addCol('clients', `prenom TEXT`);
+    addCol('clients', `raison_sociale TEXT`);
+    addCol('clients', `email TEXT`);
+    addCol('clients', `telephone TEXT`);
+    addCol('clients', `adresse TEXT`);
+    addCol('clients', `matricule_fiscale TEXT`);
+    
+    addCol('devis', `numero TEXT UNIQUE`);
+    addCol('factures', `numero TEXT UNIQUE`);
+    addCol('factures', `devis_id INTEGER`);
+
     db.run(`CREATE TABLE IF NOT EXISTS users (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       email TEXT UNIQUE,

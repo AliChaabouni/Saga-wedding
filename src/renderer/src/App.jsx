@@ -10,6 +10,9 @@ import Employes from './components/Employes';
 import Pointage from './components/Pointage';
 import Avances from './components/Avances';
 import Users from './components/Users';
+import Clients from './components/Clients';
+import Devis from './components/Devis';
+import Factures from './components/Factures';
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -30,9 +33,16 @@ function App() {
     setTimeout(() => setToast(prev => ({ ...prev, visible: false })), 3000);
   };
 
-  const [confirmDialog, setConfirmDialog] = useState({ isOpen: false, message: '', onConfirm: null });
-  const showConfirmDialog = (message, onConfirm) => setConfirmDialog({ isOpen: true, message, onConfirm });
-  const closeConfirmDialog = () => setConfirmDialog({ isOpen: false, message: '', onConfirm: null });
+  const [confirmDialog, setConfirmDialog] = useState({ isOpen: false, message: '', onConfirm: null, confirmText: 'DELETE', confirmIcon: 'trash', confirmClass: 'btn-confirm-delete' });
+  const showConfirmDialog = (message, onConfirm, options = {}) => {
+    setConfirmDialog({ 
+      isOpen: true, message, onConfirm,
+      confirmText: options.confirmText || 'DELETE',
+      confirmIcon: options.confirmIcon || 'trash',
+      confirmClass: options.confirmClass || 'btn-confirm-delete'
+    });
+  };
+  const closeConfirmDialog = () => setConfirmDialog({ isOpen: false, message: '', onConfirm: null, confirmText: 'DELETE', confirmIcon: 'trash', confirmClass: 'btn-confirm-delete' });
 
   const [employes, setEmployes] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -123,8 +133,8 @@ function App() {
             <div className="confirm-dialog-content">
               <p className="confirm-message">{confirmDialog.message}</p>
               <div className="confirm-actions">
-                <button className="btn-confirm-delete" onClick={confirmDialog.onConfirm}>
-                  <Trash2 size={16} /> DELETE
+                <button className={confirmDialog.confirmClass} onClick={confirmDialog.onConfirm}>
+                  {confirmDialog.confirmIcon === 'trash' ? <Trash2 size={16} /> : <CheckCircle size={16} />} {confirmDialog.confirmText}
                 </button>
                 <button className="btn-confirm-cancel" onClick={closeConfirmDialog}>
                   <X size={16} /> CANCEL
@@ -220,6 +230,30 @@ function App() {
             ramadanPeriods={ramadanPeriods}
             fetchRamadanPeriods={fetchRamadanPeriods}
             fetchDashboardData={fetchDashboardData}
+            showToast={showToast}
+            showConfirmDialog={showConfirmDialog}
+            closeConfirmDialog={closeConfirmDialog}
+          />
+        )}
+
+        {activeTab === 'clients' && (
+          <Clients 
+            showToast={showToast}
+            showConfirmDialog={showConfirmDialog}
+            closeConfirmDialog={closeConfirmDialog}
+          />
+        )}
+
+        {activeTab === 'devis' && (
+          <Devis 
+            showToast={showToast}
+            showConfirmDialog={showConfirmDialog}
+            closeConfirmDialog={closeConfirmDialog}
+          />
+        )}
+
+        {activeTab === 'factures' && (
+          <Factures 
             showToast={showToast}
             showConfirmDialog={showConfirmDialog}
             closeConfirmDialog={closeConfirmDialog}
