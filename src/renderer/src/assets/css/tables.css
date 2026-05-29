@@ -1,0 +1,53 @@
+.table-container {
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th {
+  background-color: var(--table-header);
+  padding: 15px;
+  text-align: left;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--primary);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  border-bottom: 1px solid var(--border);
+  transition: background-color 0.4s;
+}
+
+td {
+  padding: 15px;
+  border-bottom: 1px solid var(--border);
+  font-size: 14px;
+  color: var(--text-main);
+  transition: color 0.4s;
+}
+
+tr:hover td { background-color: var(--table-hover); }
+
+.badge {
+  padding: 4px 10px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border: 1px solid;
+}
+
+.badge-contrat { 
+  background-color: var(--badge-contrat-bg); 
+  color: var(--primary);
+  border-color: var(--primary);
+}
+
+.badge-saisonnier { 
+  background-color: var(--badge-saisonnier-bg); 
+  color: var(--badge-saisonnier-text);
+  border-color: var(--badge-saisonnier-border);
+}

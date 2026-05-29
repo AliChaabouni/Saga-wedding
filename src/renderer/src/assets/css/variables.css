@@ -1,0 +1,50 @@
+:root {
+  color-scheme: dark;
+  --bg-color: #050505;
+  --card-bg: #111111;
+  --primary: #d4af37;
+  --primary-hover: #bda23e;
+  --text-main: #f8f8f8;
+  --text-muted: #888888;
+  --border: #2a2a2a;
+  --danger: #cc3333;
+  --warning: #e6a500;
+  --input-bg: #000000;
+  --table-header: #0a0a0a;
+  --table-hover: #161616;
+  --badge-contrat-bg: rgba(212, 175, 55, 0.1);
+  --badge-saisonnier-bg: rgba(136, 136, 136, 0.1);
+  --badge-saisonnier-text: #aaaaaa;
+  --badge-saisonnier-border: #555555;
+}
+
+[data-theme='light'] {
+  color-scheme: light; 
+  --bg-color: #f4f7f6;
+  --card-bg: #ffffff;
+  --primary: #c59b27;
+  --primary-hover: #a38020;
+  --text-main: #2b2d42;
+  --text-muted: #64748b;
+  --border: #e2e8f0;
+  --danger: #ef233c;
+  --warning: #d97706;
+  --input-bg: #f8fafc;
+  --table-header: #f1f5f9;
+  --table-hover: #f8fafc;
+  --badge-contrat-bg: rgba(197, 155, 39, 0.1);
+  --badge-saisonnier-bg: #f1f5f9;
+  --badge-saisonnier-text: #64748b;
+  --badge-saisonnier-border: #cbd5e1;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  background-color: var(--bg-color);
+  color: var(--text-main);
+  min-height: 100vh; 
+  display: block;
+  transition: background-color 0.4s ease, color 0.4s ease; 
+}
