@@ -185,12 +185,17 @@ export default function Devis({ showToast, showConfirmDialog, closeConfirmDialog
             <tbody>
               {devis.map(item => {
                 const clientName = item.type_client === 'physique' ? `${item.nom} ${item.prenom}` : item.raison_sociale;
+                let statusClass = 'badge-status-brouillon';
+                if(item.statut === 'Envoyé') statusClass = 'badge-status-envoye';
+                else if(item.statut === 'Accepté') statusClass = 'badge-status-accepte';
+                else if(item.statut === 'Refusé') statusClass = 'badge-status-refuse';
+                
                 return (
                   <tr key={item.id}>
                     <td><strong>{item.numero}</strong></td>
                     <td>{clientName}</td>
                     <td>{item.date_creation}</td>
-                    <td><span className="badge">{item.statut}</span></td>
+                    <td><span className={`badge ${statusClass}`}>{item.statut}</span></td>
                     <td>{Number(item.total_ttc).toFixed(3)} TND</td>
                     <td style={{ textAlign: 'right' }}>
                       <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end' }}>

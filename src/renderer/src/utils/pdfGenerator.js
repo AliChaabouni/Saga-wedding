@@ -41,6 +41,7 @@ export const generateFactureOrDevisPDF = async (type, item) => {
   doc.text('saga.evts@gmail.com', rightX + 14, 30);
   doc.setTextColor(0, 0, 0);
   doc.text('MF : 1378995/E/A/M/000', rightX, 35);
+  doc.text('RIB : 04 139 2210035 73159 5 05', rightX, 40);
 
   currentY = 60;
 
@@ -73,17 +74,23 @@ export const generateFactureOrDevisPDF = async (type, item) => {
   doc.line(14, currentY + 1, 26, currentY + 1); // underline "Client"
   currentY += 8;
 
+  if (item.matricule_fiscale) {
+    doc.text(`MF : ${item.matricule_fiscale}`, 14, currentY);
+    doc.line(14, currentY + 1, 21, currentY + 1);
+    currentY += 8;
+  }
+  
+  if (item.cin_passport) {
+    const isCin = /^\d{8}$/.test(item.cin_passport);
+    const label = isCin ? 'CIN' : 'Passeport';
+    doc.text(`${label} : ${item.cin_passport}`, 14, currentY);
+    doc.line(14, currentY + 1, 14 + doc.getTextWidth(`${label} :`), currentY + 1);
+    currentY += 8;
+  }
+
   // Objet (Using notes field for Objet if it exists)
   doc.text(`Objet : ${item.notes || 'Prestation de services'}`, 14, currentY);
   doc.line(14, currentY + 1, 25, currentY + 1); // underline "Objet"
-  currentY += 8;
-
-  doc.text(`MF : 1685697J/A/M/000`, 14, currentY);
-  doc.line(14, currentY + 1, 22, currentY + 1);
-  currentY += 8;
-
-  doc.text(`RIB : 04 139 2210035 73159 5 05`, 14, currentY);
-  doc.line(14, currentY + 1, 22, currentY + 1);
   currentY += 8;
 
   // Table Setup

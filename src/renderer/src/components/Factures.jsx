@@ -155,15 +155,17 @@ export default function Factures({ showToast, showConfirmDialog, closeConfirmDia
             <tbody>
               {factures.map(item => {
                 const clientName = item.type_client === 'physique' ? `${item.nom} ${item.prenom}` : item.raison_sociale;
-                let badgeClass = 'badge';
-                if(item.statut === 'Payée') badgeClass += ' bg-success';
-                else if(item.statut === 'Annulée') badgeClass += ' bg-danger';
+                let statusClass = 'badge-status-brouillon';
+                if(item.statut === 'En attente') statusClass = 'badge-status-attente';
+                else if(item.statut === 'Payée') statusClass = 'badge-status-payee';
+                else if(item.statut === 'Annulée') statusClass = 'badge-status-annulee';
+
                 return (
                   <tr key={item.id}>
                     <td><strong>{item.numero}</strong></td>
                     <td>{clientName}</td>
                     <td>{item.date_creation}</td>
-                    <td><span className={badgeClass} style={{ backgroundColor: item.statut === 'Payée' ? '#d1fae5' : undefined, color: item.statut === 'Payée' ? '#065f46' : undefined }}>{item.statut}</span></td>
+                    <td><span className={`badge ${statusClass}`}>{item.statut}</span></td>
                     <td>{Number(item.total_ttc).toFixed(3)} TND</td>
                     <td style={{ textAlign: 'right' }}>
                       <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end' }}>
