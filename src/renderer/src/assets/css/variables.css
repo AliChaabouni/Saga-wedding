@@ -12,6 +12,8 @@
   --input-bg: #000000;
   --table-header: #0a0a0a;
   --table-hover: #161616;
+  --success: #10b981;
+  --info: #3b82f6;
   --badge-contrat-bg: rgba(212, 175, 55, 0.1);
   --badge-saisonnier-bg: rgba(136, 136, 136, 0.1);
   --badge-saisonnier-text: #aaaaaa;
@@ -32,6 +34,8 @@
   --input-bg: #f8fafc;
   --table-header: #f1f5f9;
   --table-hover: #f8fafc;
+  --success: #059669;
+  --info: #2563eb;
   --badge-contrat-bg: rgba(197, 155, 39, 0.1);
   --badge-saisonnier-bg: #f1f5f9;
   --badge-saisonnier-text: #64748b;

@@ -148,7 +148,7 @@ export default function Factures({ showToast, showConfirmDialog, closeConfirmDia
                 <th>Date</th>
                 <th>Statut</th>
                 <th>Total TTC</th>
-                <th>Actions</th>
+                <th style={{ textAlign: 'right' }}>Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -164,16 +164,16 @@ export default function Factures({ showToast, showConfirmDialog, closeConfirmDia
                     <td>{item.date_creation}</td>
                     <td><span className={badgeClass} style={{ backgroundColor: item.statut === 'Payée' ? '#d1fae5' : undefined, color: item.statut === 'Payée' ? '#065f46' : undefined }}>{item.statut}</span></td>
                     <td>{Number(item.total_ttc).toFixed(3)} TND</td>
-                    <td>
-                      <div style={{ display: 'flex', gap: '8px' }}>
-                        <button className="btn btn-icon" onClick={() => handleGeneratePDF(item)} title="Aperçu & Télécharger PDF">
-                          <Eye size={16} />
+                    <td style={{ textAlign: 'right' }}>
+                      <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end' }}>
+                        <button className="btn btn-sm btn-info" onClick={() => handleGeneratePDF(item)} title="Aperçu & Télécharger PDF">
+                          <Eye size={14} />
                         </button>
-                        <button className="btn btn-icon btn-edit" onClick={() => handleOpenModal(item)} title="Modifier">
-                          <Edit2 size={16} />
+                        <button className="btn btn-sm btn-warning" onClick={() => handleOpenModal(item)} title="Modifier">
+                          <Edit2 size={14} />
                         </button>
-                        <button className="btn btn-icon btn-delete" onClick={() => handleDelete(item.id)} title="Supprimer">
-                          <Trash2 size={16} />
+                        <button className="btn btn-sm btn-danger" onClick={() => handleDelete(item.id)} title="Supprimer">
+                          <Trash2 size={14} />
                         </button>
                       </div>
                     </td>
