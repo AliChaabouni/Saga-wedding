@@ -28,13 +28,10 @@ export function setupFacturesHandlers() {
     })
   })
 
-  ipcMain.handle('add-facture', async (event, factureData) => {
-    const { client_id, devis_id, date_creation, date_echeance, statut, total_ht, tva, total_ttc, notes, items } = factureData;
-    
-    // Generate numero (e.g. 2026/0001) independently for factures
-    const year = new Date(date_creation).getFullYear() || new Date().getFullYear();
-    const numero = await new Promise((resolve) => {
-      db.get(`SELECT numero FROM factures WHERE numero LIKE ? ORDER BY id DESC LIMIT 1`, [`${year}/%`], (err, row) => {
+  ipcMain.handle('get-next-facture-number', async (event, date) => {
+    const year = new Date(date || new Date()).getFullYear();
+    return new Promise((resolve) => {
+      db.get(`SELECT numero FROM factures WHERE numero LIKE ? ORDER BY CAST(substr(numero, 6) AS INTEGER) DESC LIMIT 1`, [`${year}/%`], (err, row) => {
         if (row && row.numero) {
           const lastNum = parseInt(row.numero.split('/')[1]);
           resolve(`${year}/${String(lastNum + 1).padStart(4, '0')}`);
@@ -43,6 +40,17 @@ export function setupFacturesHandlers() {
         }
       });
     });
+  });
+
+  ipcMain.handle('add-facture', async (event, factureData) => {
+    const { numero, client_id, devis_id, date_creation, date_echeance, statut, total_ht, tva, total_ttc, notes, items } = factureData;
+    
+    const exists = await new Promise((resolve) => {
+      db.get(`SELECT id FROM factures WHERE numero = ?`, [numero], (err, row) => resolve(!!row));
+    });
+    if (exists) {
+      throw new Error(`Le numéro de facture ${numero} existe déjà.`);
+    }
 
     return new Promise((resolve, reject) => {
       db.serialize(() => {
@@ -71,13 +79,21 @@ export function setupFacturesHandlers() {
     })
   })
 
-  ipcMain.handle('update-facture', (event, factureData) => {
-    const { id, statut, total_ht, tva, total_ttc, notes, items } = factureData;
+  ipcMain.handle('update-facture', async (event, factureData) => {
+    const { id, numero, statut, total_ht, tva, total_ttc, notes, items } = factureData;
+
+    const exists = await new Promise((resolve) => {
+      db.get(`SELECT id FROM factures WHERE numero = ? AND id != ?`, [numero, id], (err, row) => resolve(!!row));
+    });
+    if (exists) {
+      throw new Error(`Le numéro de facture ${numero} existe déjà.`);
+    }
+
     return new Promise((resolve, reject) => {
       db.serialize(() => {
         db.run('BEGIN TRANSACTION');
-        db.run(`UPDATE factures SET statut = ?, total_ht = ?, tva = ?, total_ttc = ?, notes = ? WHERE id = ?`,
-          [statut, total_ht, tva, total_ttc, notes, id],
+        db.run(`UPDATE factures SET numero = ?, statut = ?, total_ht = ?, tva = ?, total_ttc = ?, notes = ? WHERE id = ?`,
+          [numero, statut, total_ht, tva, total_ttc, notes, id],
           function (err) {
             if (err) { db.run('ROLLBACK'); return reject(err); }
             

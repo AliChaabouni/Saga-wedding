@@ -12,7 +12,7 @@ export default function Devis({ showToast, showConfirmDialog, closeConfirmDialog
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [previewModal, setPreviewModal] = useState({ isOpen: false, doc: null, filename: '' });
   const [formData, setFormData] = useState({
-    id: null, client_id: '', date_creation: new Date().toISOString().split('T')[0], 
+    id: null, numero: '', client_id: '', date_creation: new Date().toISOString().split('T')[0], 
     date_validite: '', statut: 'Brouillon', notes: 'Location matériels pour événement', items: []
   });
 
@@ -32,12 +32,13 @@ export default function Devis({ showToast, showConfirmDialog, closeConfirmDialog
 
   useEffect(() => { fetchDevis(); }, []);
 
-  const handleOpenModal = (item = null) => {
+  const handleOpenModal = async (item = null) => {
     if (item) {
       setFormData({...item});
     } else {
+      const nextNumero = await window.api.getNextDevisNumber(new Date().toISOString().split('T')[0]);
       setFormData({
-        id: null, client_id: '', date_creation: new Date().toISOString().split('T')[0], 
+        id: null, numero: nextNumero, client_id: '', date_creation: new Date().toISOString().split('T')[0], 
         date_validite: '', statut: 'Brouillon', notes: 'Location matériels pour événement', 
         items: [{ description: '', quantite: 1, prix_unitaire: 0, total: 0 }]
       });
@@ -131,10 +132,14 @@ export default function Devis({ showToast, showConfirmDialog, closeConfirmDialog
   const createFactureFromDevis = async (devisItem) => {
     showConfirmDialog("Convertir ce devis en facture ?", async () => {
       try {
+        const date_creation = new Date().toISOString().split('T')[0];
+        const nextNumero = await window.api.getNextFactureNumber(date_creation);
+        
         const factureData = {
+          numero: nextNumero,
           client_id: devisItem.client_id,
           devis_id: devisItem.id,
-          date_creation: new Date().toISOString().split('T')[0],
+          date_creation: date_creation,
           date_echeance: '',
           statut: 'Brouillon',
           total_ht: devisItem.total_ht,
@@ -223,6 +228,10 @@ export default function Devis({ showToast, showConfirmDialog, closeConfirmDialog
             </div>
             <form onSubmit={handleSubmit}>
               <div style={{ display: 'flex', gap: '15px', marginBottom: '15px' }}>
+                <div className="form-group" style={{ flex: 1 }}>
+                  <label className="form-label">Numéro <span className="text-danger">*</span></label>
+                  <input type="text" className="form-control" value={formData.numero || ''} onChange={e => setFormData({...formData, numero: e.target.value})} required />
+                </div>
                 <div className="form-group" style={{ flex: 2 }}>
                   <label className="form-label">Client <span className="text-danger">*</span></label>
                   <select className="form-control" value={formData.client_id} onChange={e => setFormData({...formData, client_id: e.target.value})} required>
