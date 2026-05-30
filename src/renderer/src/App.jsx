@@ -13,6 +13,7 @@ import Users from './components/Users';
 import Clients from './components/Clients';
 import Devis from './components/Devis';
 import Factures from './components/Factures';
+import BonsSortie from './components/BonsSortie';
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -254,6 +255,14 @@ function App() {
 
         {activeTab === 'factures' && (
           <Factures 
+            showToast={showToast}
+            showConfirmDialog={showConfirmDialog}
+            closeConfirmDialog={closeConfirmDialog}
+          />
+        )}
+
+        {activeTab === 'bons_sortie' && (
+          <BonsSortie 
             showToast={showToast}
             showConfirmDialog={showConfirmDialog}
             closeConfirmDialog={closeConfirmDialog}

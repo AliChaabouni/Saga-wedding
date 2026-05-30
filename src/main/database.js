@@ -106,6 +106,25 @@ export function initDatabase() {
       FOREIGN KEY(facture_id) REFERENCES factures(id) ON DELETE CASCADE
     )`)
 
+    db.run(`CREATE TABLE IF NOT EXISTS bons_sortie (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      numero TEXT UNIQUE,
+      facture_id INTEGER,
+      employe_id INTEGER,
+      date_creation TEXT,
+      notes TEXT,
+      FOREIGN KEY(facture_id) REFERENCES factures(id) ON DELETE SET NULL,
+      FOREIGN KEY(employe_id) REFERENCES employes(id) ON DELETE SET NULL
+    )`)
+
+    db.run(`CREATE TABLE IF NOT EXISTS bons_sortie_items (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      bon_sortie_id INTEGER,
+      description TEXT,
+      quantite INTEGER DEFAULT 1,
+      FOREIGN KEY(bon_sortie_id) REFERENCES bons_sortie(id) ON DELETE CASCADE
+    )`)
+
     // Migrations to add columns if they don't exist
     const addCol = (table, colDef) => db.run(`ALTER TABLE ${table} ADD COLUMN ${colDef}`, () => {});
     addCol('clients', `type_client TEXT DEFAULT 'physique'`);
@@ -120,6 +139,12 @@ export function initDatabase() {
     addCol('devis', `numero TEXT UNIQUE`);
     addCol('factures', `numero TEXT UNIQUE`);
     addCol('factures', `devis_id INTEGER`);
+    
+    // Migrations for bons_sortie just in case table was created partially
+    addCol('bons_sortie', `facture_id INTEGER`);
+    addCol('bons_sortie', `employe_id INTEGER`);
+    addCol('bons_sortie', `date_creation TEXT`);
+    addCol('bons_sortie', `notes TEXT`);
 
     db.run(`CREATE TABLE IF NOT EXISTS users (
       id INTEGER PRIMARY KEY AUTOINCREMENT,

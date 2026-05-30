@@ -145,7 +145,7 @@ export default function Devis({ showToast, showConfirmDialog, closeConfirmDialog
           total_ht: devisItem.total_ht,
           tva: devisItem.tva,
           total_ttc: devisItem.total_ttc,
-          notes: `Généré depuis le devis ${devisItem.numero}`,
+          notes: devisItem.notes,
           items: devisItem.items
         };
         await window.api.addFacture(factureData);

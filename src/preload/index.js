@@ -10,6 +10,7 @@ import dashboardApi from './api/dashboard'
 import clientsApi from './api/clients'
 import devisApi from './api/devis'
 import facturesApi from './api/factures'
+import bonsSortieApi from './api/bonsSortie'
 
 const api = {
   ...authApi,
@@ -20,7 +21,8 @@ const api = {
   ...dashboardApi,
   ...clientsApi,
   ...devisApi,
-  ...facturesApi
+  ...facturesApi,
+  ...bonsSortieApi
 }
 
 if (process.contextIsolated) {

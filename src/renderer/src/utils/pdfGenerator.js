@@ -195,3 +195,113 @@ export const generateFactureOrDevisPDF = async (type, item) => {
 
   return doc;
 };
+
+export const generateBonSortiePDF = async (item) => {
+  const doc = new jsPDF();
+  
+  let currentY = 15;
+
+  // Load logo
+  try {
+    const response = await fetch(logoImg);
+    const blob = await response.blob();
+    const base64data = await new Promise((resolve) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(blob);
+      reader.onloadend = () => resolve(reader.result);
+    });
+    
+    doc.setFillColor(0, 0, 0);
+    doc.rect(14, 10, 42, 24, 'F');
+    doc.addImage(base64data, 'PNG', 15, 11, 40, 22);
+  } catch (e) {
+    console.error("Failed to load logo", e);
+  }
+
+  // Right Header Info
+  doc.setFontSize(10);
+  doc.setTextColor(0, 0, 0);
+  doc.setFont(undefined, 'bold');
+  const rightX = 110;
+  doc.text('SOCIETE SAGA - Events et Service', rightX, 20);
+  doc.setFont(undefined, 'normal');
+  doc.text('MOB : (+216)54532532 / (+216)54680886', rightX, 25);
+  doc.text('E-mail :', rightX, 30);
+  doc.setTextColor(112, 173, 221);
+  doc.text('saga.evts@gmail.com', rightX + 14, 30);
+  doc.setTextColor(0, 0, 0);
+  doc.text('MF : 1378995/E/A/M/000', rightX, 35);
+  doc.text('RIB : 04 139 2210035 73159 5 05', rightX, 40);
+
+  currentY = 60;
+
+  // TITLE
+  doc.setFontSize(26);
+  doc.setFont('times', 'italic');
+  doc.text('BON DE SORTIE', 75, currentY);
+  currentY += 10;
+  
+  doc.setFontSize(16);
+  doc.text(`N°${item.numero.replace('BS-', '')}`, 90, currentY);
+  currentY += 15;
+
+  // Date
+  doc.setFontSize(11);
+  doc.setFont('times', 'bolditalic');
+  doc.text(`Date : ${item.date_creation.split('-').reverse().join('/')}`, 155, currentY);
+  doc.setLineWidth(0.3);
+  doc.line(155, currentY + 1, 185, currentY + 1);
+  currentY += 10;
+
+  // Info
+  doc.setFontSize(12);
+  doc.setFont('times', 'bold');
+  
+  doc.text(`Objet : ${item.notes || 'Sortie matériel'}`, 14, currentY);
+  currentY += 12;
+
+  // Table Setup
+  const tableHead = [['Qté', 'Désignation']];
+  const tableBody = item.items.map(i => [
+    String(i.quantite).padStart(2, '0'),
+    i.description
+  ]);
+
+  autoTable(doc, {
+    startY: currentY,
+    head: tableHead,
+    body: tableBody,
+    theme: 'grid',
+    styles: {
+      font: 'times',
+      fontSize: 12,
+      textColor: [0, 0, 0],
+      lineColor: [0, 0, 0],
+      lineWidth: 0.3,
+      fillColor: false,
+    },
+    headStyles: {
+      fillColor: false,
+      textColor: [0, 0, 0],
+      fontStyle: 'bold',
+      halign: 'center'
+    },
+    columnStyles: {
+      0: { cellWidth: 30, halign: 'center', fontStyle: 'bold' },
+      1: { cellWidth: 'auto', fontStyle: 'bold' }
+    },
+    didDrawPage: function (data) {
+      doc.saveGraphicsState();
+      doc.setGState(new doc.GState({opacity: 0.1}));
+      doc.setFontSize(150);
+      doc.setFont('times', 'bold');
+      doc.setTextColor(0, 0, 0);
+      doc.text('SAGA', 30, 200);
+      doc.restoreGraphicsState();
+    }
+  });
+
+  currentY = doc.lastAutoTable.finalY + 30;
+
+  return doc;
+};

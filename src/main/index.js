@@ -12,6 +12,7 @@ import { setupDashboardHandlers } from './ipc/dashboard'
 import { setupClientsHandlers } from './ipc/clients'
 import { setupDevisHandlers } from './ipc/devis'
 import { setupFacturesHandlers } from './ipc/factures'
+import { setupBonsSortieHandlers } from './ipc/bonsSortie'
 
 function createWindow() {
   const mainWindow = new BrowserWindow({
@@ -39,6 +40,7 @@ app.whenReady().then(() => {
   setupClientsHandlers()
   setupDevisHandlers()
   setupFacturesHandlers()
+  setupBonsSortieHandlers()
 
   createWindow()
   app.on('activate', function () { if (BrowserWindow.getAllWindows().length === 0) createWindow() })

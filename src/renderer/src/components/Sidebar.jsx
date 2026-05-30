@@ -35,7 +35,8 @@ export default function Sidebar({
       subItems: [
         { id: 'clients', label: 'Clients', icon: Users },
         { id: 'devis', label: 'Devis', icon: FileText },
-        { id: 'factures', label: 'Factures', icon: FileSpreadsheet }
+        { id: 'factures', label: 'Factures', icon: FileSpreadsheet },
+        { id: 'bons_sortie', label: 'Bons Sortie', icon: FileText }
       ]
     },
     { id: 'utilisateurs', icon: Shield, label: 'Utilisateurs' }

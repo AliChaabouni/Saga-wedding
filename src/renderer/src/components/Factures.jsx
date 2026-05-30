@@ -128,6 +128,30 @@ export default function Factures({ showToast, showConfirmDialog, closeConfirmDia
     }
   };
 
+  const createBonSortieFromFacture = async (factureItem) => {
+    showConfirmDialog("Générer un bon de sortie pour cette facture ?", async () => {
+      try {
+        const date_creation = new Date().toISOString().split('T')[0];
+        const nextNumero = await window.api.getNextBonSortieNumber(date_creation);
+        
+        const bonData = {
+          numero: nextNumero,
+          facture_id: factureItem.id,
+          employe_id: '', // Will require them to edit or just save empty
+          date_creation: date_creation,
+          notes: factureItem.notes,
+          items: factureItem.items.map(i => ({ description: i.description, quantite: i.quantite }))
+        };
+        await window.api.addBonSortie(bonData);
+        showToast('Bon de sortie généré avec succès. Vous pouvez le modifier dans l\'onglet Bons Sortie.');
+        closeConfirmDialog();
+      } catch(e) {
+        showToast(e.message, 'error');
+        closeConfirmDialog();
+      }
+    }, { confirmText: 'GÉNÉRER', confirmIcon: 'check', confirmClass: 'btn-confirm-action' });
+  };
+
   return (
     <div className="card">
       <div className="card-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -169,6 +193,9 @@ export default function Factures({ showToast, showConfirmDialog, closeConfirmDia
                     <td>{Number(item.total_ttc).toFixed(3)} TND</td>
                     <td style={{ textAlign: 'right' }}>
                       <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end' }}>
+                        <button className="btn btn-sm btn-success" onClick={() => createBonSortieFromFacture(item)} title="Générer Bon de Sortie">
+                          <FileText size={14} />
+                        </button>
                         <button className="btn btn-sm btn-info" onClick={() => handleGeneratePDF(item)} title="Aperçu & Télécharger PDF">
                           <Eye size={14} />
                         </button>
