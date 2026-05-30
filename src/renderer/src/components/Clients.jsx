@@ -13,8 +13,9 @@ export default function Clients({ showToast, showConfirmDialog, closeConfirmDial
   const [formData, setFormData] = useState({
     id: null,
     type_client: 'physique',
+    document_type: 'cin',
     nom: '', prenom: '', raison_sociale: '',
-    email: '', telephone: '', adresse: '', matricule_fiscale: ''
+    email: '', telephone: '', adresse: '', matricule_fiscale: '', cin_passport: ''
   });
 
   const fetchClients = async () => {
@@ -35,12 +36,15 @@ export default function Clients({ showToast, showConfirmDialog, closeConfirmDial
 
   const handleOpenModal = (client = null) => {
     if (client) {
-      setFormData(client);
+      setFormData({
+        ...client,
+        document_type: (client.cin_passport && !/^\d{8}$/.test(client.cin_passport)) ? 'passport' : 'cin'
+      });
     } else {
       setFormData({
-        id: null, type_client: 'physique',
+        id: null, type_client: 'physique', document_type: 'cin',
         nom: '', prenom: '', raison_sociale: '',
-        email: '', telephone: '', adresse: '', matricule_fiscale: ''
+        email: '', telephone: '', adresse: '', matricule_fiscale: '', cin_passport: ''
       });
     }
     setIsModalOpen(true);
@@ -51,6 +55,12 @@ export default function Clients({ showToast, showConfirmDialog, closeConfirmDial
     
     if (formData.telephone && !isValidPhoneNumber(formData.telephone)) {
       return showToast('Numéro de téléphone invalide', 'error');
+    }
+
+    if (formData.type_client === 'physique' && formData.document_type === 'cin' && formData.cin_passport) {
+      if (!/^\d{8}$/.test(formData.cin_passport)) {
+        return showToast('Le CIN doit contenir exactement 8 chiffres.', 'error');
+      }
     }
 
     try {
@@ -117,34 +127,55 @@ export default function Clients({ showToast, showConfirmDialog, closeConfirmDial
           <table className="table">
             <thead>
               <tr>
+                <th>Client</th>
                 <th>Type</th>
-                <th>Nom / Raison Sociale</th>
-                <th>Contact</th>
                 <th>Téléphone</th>
-                <th>Matricule Fiscale</th>
-                <th>Actions</th>
+                <th>Identifiant</th>
+                <th style={{ textAlign: 'right' }}>Actions</th>
               </tr>
             </thead>
             <tbody>
               {filteredClients.map(client => (
                 <tr key={client.id}>
                   <td>
-                    {client.type_client === 'physique' ? 
-                      <span className="badge" style={{ backgroundColor: '#e2e8f0', color: '#475569' }}><User size={12} style={{ marginRight: '4px' }}/> Physique</span> : 
-                      <span className="badge" style={{ backgroundColor: '#dbeafe', color: '#1e40af' }}><Building size={12} style={{ marginRight: '4px' }}/> Entreprise</span>
-                    }
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                      <div style={{ backgroundColor: 'var(--border)', padding: '8px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        {client.type_client === 'physique' ? <User size={20} color="var(--primary)" /> : <Building size={20} color="var(--primary)" />}
+                      </div>
+                      <div>
+                        <div style={{ fontWeight: '600', color: 'var(--text-main)' }}>
+                          {client.type_client === 'physique' ? `${client.nom} ${client.prenom}` : client.raison_sociale}
+                        </div>
+                        {client.email && (
+                          <div style={{ fontSize: '12px', color: 'var(--text-muted)', marginTop: '4px' }}>
+                            {client.email}
+                          </div>
+                        )}
+                      </div>
+                    </div>
                   </td>
-                  <td>{client.type_client === 'physique' ? `${client.nom} ${client.prenom}` : client.raison_sociale}</td>
-                  <td>{client.email || '-'}</td>
-                  <td>{client.telephone || '-'}</td>
-                  <td>{client.matricule_fiscale || '-'}</td>
                   <td>
-                    <div style={{ display: 'flex', gap: '8px' }}>
-                      <button className="btn btn-icon btn-edit" onClick={() => handleOpenModal(client)} title="Modifier">
-                        <Edit2 size={16} />
+                    <span className="badge" style={{ 
+                      backgroundColor: 'transparent', 
+                      color: client.type_client === 'physique' ? 'var(--text-main)' : 'var(--primary)', 
+                      border: `1px solid ${client.type_client === 'physique' ? 'var(--text-muted)' : 'var(--primary)'}` 
+                    }}>
+                      {client.type_client === 'physique' ? 'PHYSIQUE' : 'ENTREPRISE'}
+                    </span>
+                  </td>
+                  <td>{client.telephone || '-'}</td>
+                  <td>
+                    {client.type_client === 'morale' 
+                      ? (client.matricule_fiscale ? `MF: ${client.matricule_fiscale}` : '-') 
+                      : (client.cin_passport ? `ID: ${client.cin_passport}` : '-')}
+                  </td>
+                  <td style={{ textAlign: 'right' }}>
+                    <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end' }}>
+                      <button className="btn btn-sm btn-warning" onClick={() => handleOpenModal(client)} title="Modifier">
+                        <Edit2 size={14} />
                       </button>
-                      <button className="btn btn-icon btn-delete" onClick={() => handleDelete(client.id)} title="Supprimer">
-                        <Trash2 size={16} />
+                      <button className="btn btn-sm btn-danger" onClick={() => handleDelete(client.id)} title="Supprimer">
+                        <Trash2 size={14} />
                       </button>
                     </div>
                   </td>
@@ -152,7 +183,7 @@ export default function Clients({ showToast, showConfirmDialog, closeConfirmDial
               ))}
               {filteredClients.length === 0 && (
                 <tr>
-                  <td colSpan="6" style={{ textAlign: 'center', padding: '20px' }}>Aucun client trouvé.</td>
+                  <td colSpan="5" style={{ textAlign: 'center', padding: '20px' }}>Aucun client trouvé.</td>
                 </tr>
               )}
             </tbody>
@@ -183,16 +214,49 @@ export default function Clients({ showToast, showConfirmDialog, closeConfirmDial
               </div>
 
               {formData.type_client === 'physique' ? (
-                <div style={{ display: 'flex', gap: '15px' }}>
-                  <div className="form-group" style={{ flex: 1 }}>
-                    <label className="form-label">Nom <span className="text-danger">*</span></label>
-                    <input type="text" className="form-control" value={formData.nom} onChange={e => setFormData({...formData, nom: e.target.value})} required={formData.type_client === 'physique'} />
+                <>
+                  <div style={{ display: 'flex', gap: '15px' }}>
+                    <div className="form-group" style={{ flex: 1 }}>
+                      <label className="form-label">Nom <span className="text-danger">*</span></label>
+                      <input type="text" className="form-control" value={formData.nom} onChange={e => setFormData({...formData, nom: e.target.value})} required={formData.type_client === 'physique'} />
+                    </div>
+                    <div className="form-group" style={{ flex: 1 }}>
+                      <label className="form-label">Prénom <span className="text-danger">*</span></label>
+                      <input type="text" className="form-control" value={formData.prenom} onChange={e => setFormData({...formData, prenom: e.target.value})} required={formData.type_client === 'physique'} />
+                    </div>
                   </div>
-                  <div className="form-group" style={{ flex: 1 }}>
-                    <label className="form-label">Prénom <span className="text-danger">*</span></label>
-                    <input type="text" className="form-control" value={formData.prenom} onChange={e => setFormData({...formData, prenom: e.target.value})} required={formData.type_client === 'physique'} />
+                  <div className="form-group" style={{ marginTop: '15px' }}>
+                    <label className="form-label">Type de pièce d'identité</label>
+                    <div style={{ display: 'flex', gap: '20px', marginBottom: '10px' }}>
+                      <label style={{ display: 'flex', alignItems: 'center', gap: '5px', cursor: 'pointer' }}>
+                        <input type="radio" name="document_type" value="cin" checked={formData.document_type === 'cin'} onChange={e => setFormData({...formData, document_type: e.target.value, cin_passport: ''})} />
+                        CIN
+                      </label>
+                      <label style={{ display: 'flex', alignItems: 'center', gap: '5px', cursor: 'pointer' }}>
+                        <input type="radio" name="document_type" value="passport" checked={formData.document_type === 'passport'} onChange={e => setFormData({...formData, document_type: e.target.value, cin_passport: ''})} />
+                        Passeport
+                      </label>
+                    </div>
+                    {formData.document_type === 'cin' ? (
+                      <input 
+                        type="text" 
+                        className="form-control" 
+                        value={formData.cin_passport || ''} 
+                        onChange={e => setFormData({...formData, cin_passport: e.target.value.replace(/\D/g, '')})} 
+                        placeholder="Ex: 01234567" 
+                        maxLength="8"
+                      />
+                    ) : (
+                      <input 
+                        type="text" 
+                        className="form-control" 
+                        value={formData.cin_passport || ''} 
+                        onChange={e => setFormData({...formData, cin_passport: e.target.value})} 
+                        placeholder="Numéro de passeport" 
+                      />
+                    )}
                   </div>
-                </div>
+                </>
               ) : (
                 <div className="form-group">
                   <label className="form-label">Raison Sociale <span className="text-danger">*</span></label>

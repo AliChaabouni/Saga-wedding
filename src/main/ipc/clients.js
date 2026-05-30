@@ -12,10 +12,10 @@ export function setupClientsHandlers() {
   })
 
   ipcMain.handle('add-client', (event, clientData) => {
-    const { type_client, nom, prenom, raison_sociale, email, telephone, adresse, matricule_fiscale } = clientData;
+    const { type_client, nom, prenom, raison_sociale, email, telephone, adresse, matricule_fiscale, cin_passport } = clientData;
     return new Promise((resolve, reject) => {
-      db.run(`INSERT INTO clients (type_client, nom, prenom, raison_sociale, email, telephone, adresse, matricule_fiscale) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
-        [type_client, nom, prenom, raison_sociale, email, telephone, adresse, matricule_fiscale],
+      db.run(`INSERT INTO clients (type_client, nom, prenom, raison_sociale, email, telephone, adresse, matricule_fiscale, cin_passport) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        [type_client, nom, prenom, raison_sociale, email, telephone, adresse, matricule_fiscale, cin_passport],
         function (err) {
           if (err) return reject(err)
           resolve({ id: this.lastID, ...clientData })
@@ -25,10 +25,10 @@ export function setupClientsHandlers() {
   })
 
   ipcMain.handle('update-client', (event, clientData) => {
-    const { id, type_client, nom, prenom, raison_sociale, email, telephone, adresse, matricule_fiscale } = clientData;
+    const { id, type_client, nom, prenom, raison_sociale, email, telephone, adresse, matricule_fiscale, cin_passport } = clientData;
     return new Promise((resolve, reject) => {
-      db.run(`UPDATE clients SET type_client = ?, nom = ?, prenom = ?, raison_sociale = ?, email = ?, telephone = ?, adresse = ?, matricule_fiscale = ? WHERE id = ?`,
-        [type_client, nom, prenom, raison_sociale, email, telephone, adresse, matricule_fiscale, id],
+      db.run(`UPDATE clients SET type_client = ?, nom = ?, prenom = ?, raison_sociale = ?, email = ?, telephone = ?, adresse = ?, matricule_fiscale = ?, cin_passport = ? WHERE id = ?`,
+        [type_client, nom, prenom, raison_sociale, email, telephone, adresse, matricule_fiscale, cin_passport, id],
         function (err) {
           if (err) return reject(err)
           resolve({ success: true })

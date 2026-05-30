@@ -52,7 +52,8 @@ export function initDatabase() {
       email TEXT,
       telephone TEXT,
       adresse TEXT,
-      matricule_fiscale TEXT
+      matricule_fiscale TEXT,
+      cin_passport TEXT
     )`)
 
     db.run(`CREATE TABLE IF NOT EXISTS devis (
@@ -114,6 +115,7 @@ export function initDatabase() {
     addCol('clients', `telephone TEXT`);
     addCol('clients', `adresse TEXT`);
     addCol('clients', `matricule_fiscale TEXT`);
+    addCol('clients', `cin_passport TEXT`);
     
     addCol('devis', `numero TEXT UNIQUE`);
     addCol('factures', `numero TEXT UNIQUE`);
